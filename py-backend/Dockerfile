@@ -40,3 +40,5 @@ ENTRYPOINT []
 
 # Use the non-root user to run our application
 USER nonroot
+
+CMD ["sleep", "infinity"]

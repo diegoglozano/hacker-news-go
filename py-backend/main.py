@@ -30,12 +30,8 @@ async def get_all_items(items: list[int]):
 
 async def main():
     engine = create_async_engine(DATABASE_URL)
-
-    async with engine.begin() as conn:
-        await conn.run_sync(
-            Base.metadata.create_all
-        )
     AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+
     async with ClientSession() as session:
         async with session.get(f"{URL}topstories.json") as resp:
             top_stories = await resp.json()

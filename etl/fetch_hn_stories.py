@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.dialects.postgresql import insert
 from aiohttp import ClientSession
 
+from loguru import logger
+
 from src.db.tables import (
     Story,
 )
@@ -29,6 +31,7 @@ async def get_all_items(items: list[int]):
         return await asyncio.gather(*tasks)
 
 async def main():
+    logger.info("Start fetching HN stories")
     engine = create_async_engine(DATABASE_URL)
     AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
@@ -57,3 +60,4 @@ async def main():
 
         await session.execute(stmt)
         await session.commit()
+    logger.info("End fetching HN stories")

@@ -1,10 +1,12 @@
 import asyncio
 import os
 
+from attr import s
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
     async_sessionmaker,
 )
+from sqlalchemy.dialects.postgresql import insert
 from aiohttp import ClientSession
 
 from src.db.tables import (
@@ -40,13 +42,21 @@ async def main():
     )
     async with AsyncSessionLocal() as session:
         story_fields = {c.name for c in Story.__table__.columns}
-        stories = [
-            Story(**{k: v for k, v in item.items() if k in story_fields})
+        data = [
+            {k: v for k, v in item.items() if k in story_fields}
             for item in all_items
             if item and item.get("type") == "story"
         ]
 
-        session.add_all(stories)
+        stmt = (
+            insert(Story)
+            .values(data)
+            .on_conflict_do_nothing(
+                index_elements=["id"]
+            )
+        )
+
+        await session.execute(stmt)
         await session.commit()
 
 if __name__ == "__main__":

@@ -39,10 +39,13 @@ async def main():
         items=top_stories[:2],
     )
     async with AsyncSessionLocal() as session:
+        story_fields = {c.name for c in Story.__table__.columns}
         stories = [
-            Story(**item)
+            Story(**{k: v for k, v in item.items() if k in story_fields})
             for item in all_items
+            if item and item.get("type") == "story"
         ]
+
         session.add_all(stories)
         await session.commit()
 

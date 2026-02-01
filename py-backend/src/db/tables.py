@@ -18,4 +18,3 @@ class Story(Base):
     url: Mapped[str | None]  # optional for text posts
     time: Mapped[int]
     descendants: Mapped[int | None]  # comment count
-    type: Mapped[str]  # "story", "comment", etc.

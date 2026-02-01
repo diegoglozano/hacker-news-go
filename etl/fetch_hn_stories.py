@@ -1,7 +1,6 @@
 import asyncio
 import os
 
-from attr import s
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
     async_sessionmaker,
@@ -58,6 +57,3 @@ async def main():
 
         await session.execute(stmt)
         await session.commit()
-
-if __name__ == "__main__":
-    asyncio.run(main())

@@ -8,6 +8,6 @@ dependencies = [
     "aiohttp>=3.13.3",
     "alembic>=1.18.3",
     "psycopg[binary]>=3.3.2; sys_platform == 'darwin'",
-    "psycopg[c]>=3.3.2; sys_platform == 'linux'",
+    "psycopg>=3.3.2; sys_platform == 'linux'",
     "sqlalchemy[asyncio]>=2.0.46",
 ]

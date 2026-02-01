@@ -9,7 +9,6 @@ from aiohttp import ClientSession
 
 from src.db.tables import (
     Story,
-    Base,
 )
 
 

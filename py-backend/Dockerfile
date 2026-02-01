@@ -41,4 +41,4 @@ ENTRYPOINT []
 # Use the non-root user to run our application
 USER nonroot
 
-CMD ["sleep", "infinity"]
+CMD ["sh", "-c", "alembic upgrade head && sleep infinity"]

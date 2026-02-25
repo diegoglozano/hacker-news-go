@@ -25,7 +25,7 @@ async def main():
                 FROM stories
             """,
             uri=DATABASE_URL,
-            engine="adbc",
+            # engine="adbc",
         )
         .with_columns(
             pl

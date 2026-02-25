@@ -10,6 +10,7 @@ dependencies = [
     "connectorx>=0.4.5",
     "fastembed>=0.7.4",
     "loguru>=0.7.3",
+    "pandas>=3.0.1",
     "polars>=1.38.1",
     "prefect>=3.6.15",
     "psycopg[binary]>=3.3.2",

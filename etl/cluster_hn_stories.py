@@ -11,6 +11,8 @@ SEED = 42
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL is None:
     raise Exception("DATABASE_URL not available")
+POLARS_DB_URL = DATABASE_URL.replace("postgresql+psycopg://", "postgresql://")
+
 
 model = TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")
 kmeans = KMeans(n_clusters=5, random_state=SEED)
@@ -24,8 +26,8 @@ async def main():
                 SELECT title
                 FROM stories
             """,
-            uri=DATABASE_URL,
-            # engine="adbc",
+            uri=POLARS_DB_URL,
+            engine="connectorx",
         )
         .with_columns(
             pl
@@ -54,8 +56,8 @@ async def main():
         )
         .write_database(
             table_name="clusters",
-            connection=DATABASE_URL,
+            connection=POLARS_DB_URL,
             if_table_exists="replace",
-            # engine="adbc",
+            engine="sqlalchemy",
         )
     )

@@ -25,6 +25,7 @@ async def main():
                 FROM stories
             """,
             uri=DATABASE_URL,
+            engine="adbc",
         )
         .with_columns(
             pl
@@ -55,5 +56,6 @@ async def main():
             table_name="clusters",
             connection=DATABASE_URL,
             if_table_exists="replace",
+            engine="adbc",
         )
     )

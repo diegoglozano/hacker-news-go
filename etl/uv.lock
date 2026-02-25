@@ -41,6 +41,23 @@ wheels = [
 ]
 
 [[package]]
+name = "adbc-driver-postgresql"
+version = "1.10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "adbc-driver-manager" },
+    { name = "importlib-resources" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/14/15/bb1d0458fb79bec75d6392d695f3dd58e3100789e6605a69e2b0e30ba1b5/adbc_driver_postgresql-1.10.0.tar.gz", hash = "sha256:4687d41180a31f6e6081dfb85cbe4b1611498d6b5c462f34ed3b7e68d20ed90d", size = 20747, upload-time = "2026-01-09T07:13:47.118Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5f/f8/7105475d6749f709223e363dca59cf751593cbdd815acc5939e7236367f4/adbc_driver_postgresql-1.10.0-py3-none-macosx_10_15_x86_64.whl", hash = "sha256:e59af997b2be409b27a1feee89f702cd7f528c2c4ae0696b41e25f46fda2db27", size = 2991224, upload-time = "2026-01-09T07:12:57.311Z" },
+    { url = "https://files.pythonhosted.org/packages/44/72/5ce2a53b6d4d2bb533d3250d6f3a32e6171a82f74c712583c04bf9dabf15/adbc_driver_postgresql-1.10.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:4fa0f647498687d937646be234b5eeb464ddff503e0233351a127703fd8783ec", size = 3271094, upload-time = "2026-01-09T07:13:00.273Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/87/a997e82262f58ccc5340898f623dec8b8b80d40db48ab7b7575efd92bb6e/adbc_driver_postgresql-1.10.0-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:e9a0f0097b33574eff87fccbf17713b8c5c0d9f6fed9c081e074989b8b4ad5cc", size = 3757195, upload-time = "2026-01-09T07:13:02.267Z" },
+    { url = "https://files.pythonhosted.org/packages/76/f7/2ca5bd4d8d4edcd8721adeba20690806cf6186d9a3de217b2c5f44530c3c/adbc_driver_postgresql-1.10.0-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:a2efec61f5ba966e503081b7f058516745e95e0d965bfd9ecfcae2f6d2d4a178", size = 3431159, upload-time = "2026-01-09T07:13:04.281Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/a8/17129f60d0de09947f12dbeb25a107bef7cc265ea4f5fd5d88ed02ba58ce/adbc_driver_postgresql-1.10.0-py3-none-win_amd64.whl", hash = "sha256:81c285c08cf28faae36791f5c790a16b1d87cdee9037af874e4dcf747c21a8e2", size = 3020799, upload-time = "2026-01-09T07:13:06.104Z" },
+]
+
+[[package]]
 name = "aiohappyeyeballs"
 version = "2.6.1"
 source = { registry = "https://pypi.org/simple" }
@@ -506,6 +523,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "adbc-driver-manager" },
+    { name = "adbc-driver-postgresql" },
     { name = "aiohttp" },
     { name = "alembic" },
     { name = "fastembed" },
@@ -520,6 +538,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "adbc-driver-manager", specifier = ">=1.10.0" },
+    { name = "adbc-driver-postgresql", specifier = ">=1.10.0" },
     { name = "aiohttp", specifier = ">=3.13.3" },
     { name = "alembic", specifier = ">=1.18.3" },
     { name = "fastembed", specifier = ">=0.7.4" },
@@ -902,6 +921,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f3/49/3b30cad09e7771a4982d9975a8cbf64f00d4a1ececb53297f1d9a7be1b10/importlib_metadata-8.7.1.tar.gz", hash = "sha256:49fef1ae6440c182052f407c8d34a68f72efc36db9ca90dc0113398f2fdde8bb", size = 57107, upload-time = "2025-12-21T10:00:19.278Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fa/5e/f8e9a1d23b9c20a551a8a02ea3637b4642e22c2626e3a13a9a29cdea99eb/importlib_metadata-8.7.1-py3-none-any.whl", hash = "sha256:5a1f80bf1daa489495071efbb095d75a634cf28a8bc299581244063b53176151", size = 27865, upload-time = "2025-12-21T10:00:18.329Z" },
+]
+
+[[package]]
+name = "importlib-resources"
+version = "6.5.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/8c/f834fbf984f691b4f7ff60f50b514cc3de5cc08abfc3295564dd89c5e2e7/importlib_resources-6.5.2.tar.gz", hash = "sha256:185f87adef5bcc288449d98fb4fba07cea78bc036455dd44c5fc4a2fe78fed2c", size = 44693, upload-time = "2025-01-03T18:51:56.698Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/ed/1f1afb2e9e7f38a545d628f864d562a5ae64fe6f7a10e28ffb9b185b4e89/importlib_resources-6.5.2-py3-none-any.whl", hash = "sha256:789cfdc3ed28c78b67a06acb8126751ced69a3d5f79c095a98298cd8a760ccec", size = 37461, upload-time = "2025-01-03T18:51:54.306Z" },
 ]
 
 [[package]]

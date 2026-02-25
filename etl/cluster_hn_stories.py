@@ -19,12 +19,12 @@ pca = PCA(n_components=2, random_state=SEED)
 async def main():
     (
         pl
-        .read_database(
+        .read_database_uri(
             query="""
                 SELECT title
                 FROM stories
             """,
-            connection=DATABASE_URL,
+            uri=DATABASE_URL,
         )
         .with_columns(
             pl

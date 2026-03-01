@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -16,46 +16,23 @@ app.add_middleware(
 )
 
 
-@app.get("/stories")
-async def get_stories(
-    limit: int = Query(50, ge=1, le=500),
-    offset: int = Query(0, ge=0),
-    session: AsyncSession = Depends(get_session),
-):
-    result = await session.execute(
-        select(Story)
-        .order_by(Story.score.desc())
-        .limit(limit)
-        .offset(offset)
-    )
-    stories = result.scalars().all()
-    return [
-        {
-            "id": s.id,
-            "by": s.by,
-            "title": s.title,
-            "text": s.text,
-            "score": s.score,
-            "url": s.url,
-            "time": s.time,
-            "descendants": s.descendants,
-        }
-        for s in stories
-    ]
-
-
 @app.get("/clusters")
 async def get_clusters(
     session: AsyncSession = Depends(get_session),
 ):
-    result = await session.execute(select(Cluster))
-    clusters = result.scalars().all()
+    result = await session.execute(
+        select(Cluster, Story.url, Story.score, Story.by)
+        .outerjoin(Story, Story.title == Cluster.title)
+    )
     return [
         {
             "title": c.title,
             "cluster": c.cluster,
             "x": c.x,
             "y": c.y,
+            "url": url,
+            "score": score,
+            "by": by,
         }
-        for c in clusters
+        for c, url, score, by in result.all()
     ]

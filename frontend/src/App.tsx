@@ -4,21 +4,14 @@ import './App.css'
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
-interface Story {
-  id: number
-  by: string
-  title: string
-  score: number
-  url: string | null
-  time: number
-  descendants: number | null
-}
-
 interface Cluster {
   title: string
   cluster: number
   x: number
   y: number
+  url: string | null
+  score: number | null
+  by: string | null
 }
 
 function ClusterPlot({ data }: { data: Cluster[] }) {
@@ -29,8 +22,8 @@ function ClusterPlot({ data }: { data: Cluster[] }) {
 
     const plot = Plot.plot({
       width: 800,
-      height: 500,
-      style: { background: 'transparent', color: '#e0e0e0' },
+      height: 550,
+      style: { background: 'transparent', color: '#e0e0e0', cursor: 'default' },
       marks: [
         Plot.dot(data, {
           x: 'x',
@@ -39,7 +32,9 @@ function ClusterPlot({ data }: { data: Cluster[] }) {
           r: 5,
           opacity: 0.8,
           tip: true,
-          title: 'title',
+          title: (d: Cluster) => `${d.title}\n${d.by} · ${d.score} pts`,
+          href: 'url',
+          target: '_blank',
         }),
       ],
       color: { legend: true, label: 'Cluster' },
@@ -55,25 +50,21 @@ function ClusterPlot({ data }: { data: Cluster[] }) {
 }
 
 export default function App() {
-  const [stories, setStories] = useState<Story[]>([])
   const [clusters, setClusters] = useState<Cluster[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${API}/stories`).then(r => r.json()),
-      fetch(`${API}/clusters`).then(r => r.json()),
-    ]).then(([s, c]) => {
-      setStories(s)
-      setClusters(c)
-      setLoading(false)
-    })
+    fetch(`${API}/clusters`)
+      .then(r => r.json())
+      .then(data => {
+        setClusters(data)
+        setLoading(false)
+      })
   }, [])
 
   return (
     <>
       <h1>Hacker News</h1>
-
       <div className="section">
         <h2>Story clusters</h2>
         <div className="plot-container">
@@ -83,29 +74,6 @@ export default function App() {
             <ClusterPlot data={clusters} />
           )}
         </div>
-      </div>
-
-      <div className="section">
-        <h2>Top stories</h2>
-        {loading ? (
-          <p className="loading">Loading…</p>
-        ) : (
-          <div className="stories-list">
-            {stories.map(s => (
-              <div className="story" key={s.id}>
-                <span className="story-score">{s.score}</span>
-                {s.url ? (
-                  <a className="story-title" href={s.url} target="_blank" rel="noreferrer">
-                    {s.title}
-                  </a>
-                ) : (
-                  <span className="story-title">{s.title}</span>
-                )}
-                <span className="story-by">{s.by}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </>
   )

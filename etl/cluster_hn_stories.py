@@ -54,6 +54,12 @@ async def main():
             )
             .alias("embedding_2"),
         )
+        .drop("embedding")
+        .with_columns(
+            pl.col("embedding_2").arr.get(0).alias("x"),
+            pl.col("embedding_2").arr.get(1).alias("y"),
+        )
+        .drop("embedding_2")
         .write_database(
             table_name="clusters",
             connection=POLARS_DB_URL,

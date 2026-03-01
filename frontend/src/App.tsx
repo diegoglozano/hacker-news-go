@@ -41,14 +41,21 @@ function getGroups(clusters: Cluster[]): Group[] {
   }))
 }
 
+interface TreeNode {
+  label?: string
+  value?: number
+  color?: string
+  children?: TreeNode[]
+}
+
 function Treemap({ groups }: { groups: Group[] }) {
   const W = 800, H = 480
 
-  const root = hierarchy<{ label?: string; value?: number; color?: string; children?: object[] }>({
+  const root = hierarchy<TreeNode>({
     children: groups.map(g => ({ label: g.label, value: g.stories.length, color: g.color })),
   }).sum(d => d.value ?? 0)
 
-  treemap().size([W, H]).padding(3)(root)
+  treemap<TreeNode>().size([W, H]).padding(3)(root)
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>

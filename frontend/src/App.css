@@ -48,6 +48,117 @@ h1 {
   overflow-x: auto;
 }
 
+/* Treemap blocks */
+.treemap-block {
+  position: absolute;
+  border-radius: 3px;
+  padding: 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s, filter 0.15s;
+  overflow: hidden;
+}
+
+.treemap-block:hover {
+  opacity: 1;
+  filter: brightness(1.15);
+}
+
+.treemap-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.treemap-count {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 4px;
+}
+
+.treemap-stories {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.treemap-stories li {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+/* Treemap expanded view */
+.treemap-expanded {
+  display: flex;
+  flex-direction: column;
+  height: 480px;
+}
+
+.treemap-expanded-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid;
+}
+
+.back-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #888;
+  padding: 0.25rem 0.7rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.back-btn:hover {
+  border-color: #555;
+  color: #ccc;
+}
+
+.treemap-expanded-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.treemap-expanded-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.treemap-expanded-list a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.treemap-expanded-list a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

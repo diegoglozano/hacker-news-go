@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as Plot from '@observablehq/plot'
 import { hierarchy, treemap } from 'd3'
 import './App.css'
@@ -48,38 +48,80 @@ interface TreeNode {
   children?: TreeNode[]
 }
 
+type LayoutNode = {
+  data: TreeNode
+  x0: number; x1: number; y0: number; y1: number
+}
+
 function Treemap({ groups }: { groups: Group[] }) {
-  const W = 800, H = 480
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerW, setContainerW] = useState(800)
+  const [selected, setSelected] = useState<Group | null>(null)
+  const H = 480
 
-  const root = hierarchy<TreeNode>({
-    children: groups.map(g => ({ label: g.label, value: g.stories.length, color: g.color })),
-  }).sum(d => d.value ?? 0)
+  useEffect(() => {
+    if (!containerRef.current) return
+    const ro = new ResizeObserver(([e]) => setContainerW(e.contentRect.width))
+    ro.observe(containerRef.current)
+    return () => ro.disconnect()
+  }, [])
 
-  treemap<TreeNode>().size([W, H]).padding(3)(root)
+  const nodes = useMemo<LayoutNode[]>(() => {
+    const root = hierarchy<TreeNode>({
+      children: groups.map(g => ({ label: g.label, value: g.stories.length, color: g.color })),
+    }).sum(d => d.value ?? 0)
+    treemap<TreeNode>().size([containerW, H]).padding(3)(root)
+    return root.leaves() as unknown as LayoutNode[]
+  }, [groups, containerW])
+
+  if (selected) {
+    return (
+      <div className="treemap-expanded">
+        <div className="treemap-expanded-header" style={{ borderColor: selected.color }}>
+          <span style={{ color: selected.color, fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            {selected.label}
+          </span>
+          <button className="back-btn" onClick={() => setSelected(null)}>← Back</button>
+        </div>
+        <ul className="treemap-expanded-list">
+          {selected.stories.map(s => (
+            <li key={s.title}>
+              <a href={s.url ?? undefined} target="_blank" rel="noreferrer">{s.title}</a>
+              <span className="meta">{s.by && `${s.by} · `}{s.score ?? 0} pts</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
-      {root.leaves().map(node => {
-        const n = node as typeof node & { x0: number; x1: number; y0: number; y1: number }
+    <div ref={containerRef} style={{ position: 'relative', height: H }}>
+      {nodes.map(n => {
         const w = n.x1 - n.x0
         const h = n.y1 - n.y0
+        const group = groups.find(g => g.label === n.data.label)!
+        const storiesToShow = Math.max(0, Math.floor((h - 44) / 18))
         return (
-          <g key={n.data.label} transform={`translate(${n.x0},${n.y0})`}>
-            <rect width={w} height={h} fill={n.data.color} opacity={0.85} rx={3} />
-            {w > 60 && h > 28 && (
-              <text x={8} y={20} fill="#fff" fontSize={11} fontWeight={600} style={{ pointerEvents: 'none' }}>
-                {n.data.label}
-              </text>
+          <div
+            key={n.data.label}
+            className="treemap-block"
+            style={{ left: n.x0, top: n.y0, width: w, height: h, background: n.data.color } as React.CSSProperties}
+            onClick={() => setSelected(group)}
+          >
+            {w > 50 && h > 24 && <div className="treemap-label">{n.data.label}</div>}
+            {w > 50 && h > 40 && <div className="treemap-count">{n.data.value} stories</div>}
+            {w > 80 && storiesToShow > 0 && (
+              <ul className="treemap-stories">
+                {group.stories.slice(0, storiesToShow).map(s => (
+                  <li key={s.title}>{s.title}</li>
+                ))}
+              </ul>
             )}
-            {w > 60 && h > 44 && (
-              <text x={8} y={36} fill="rgba(255,255,255,0.5)" fontSize={10} style={{ pointerEvents: 'none' }}>
-                {n.data.value} stories
-              </text>
-            )}
-          </g>
+          </div>
         )
       })}
-    </svg>
+    </div>
   )
 }
 

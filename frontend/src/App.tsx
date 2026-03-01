@@ -196,7 +196,7 @@ function TopicBlock({ label, stories, color }: Group) {
 export default function App() {
   const [clusters, setClusters] = useState<Cluster[]>([])
   const [loading, setLoading] = useState(true)
-  const [tab, setTab] = useState<'treemap' | 'bubble'>('treemap')
+  const [tab, setTab] = useState<'feed' | 'treemap' | 'bubble'>('feed')
 
   useEffect(() => {
     fetch(`${API}/clusters`)
@@ -216,15 +216,20 @@ export default function App() {
       <h1>Orbit <span style={{ color: '#888', fontWeight: 400 }}>· Hacker News</span></h1>
       <div className="section">
         <div className="tabs">
+          <button className={`tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>Feed</button>
           <button className={`tab${tab === 'treemap' ? ' active' : ''}`} onClick={() => setTab('treemap')}>Treemap</button>
           <button className={`tab${tab === 'bubble' ? ' active' : ''}`} onClick={() => setTab('bubble')}>Bubble</button>
         </div>
-        <div className="chart-container">
-          {tab === 'treemap' ? <Treemap groups={groups} /> : <BubbleChart groups={groups} />}
-        </div>
-      </div>
-      <div className="grid">
-        {groups.map(g => <TopicBlock key={g.label} {...g} />)}
+        {tab === 'feed' && (
+          <div className="grid">
+            {groups.map(g => <TopicBlock key={g.label} {...g} />)}
+          </div>
+        )}
+        {(tab === 'treemap' || tab === 'bubble') && (
+          <div className="chart-container">
+            {tab === 'treemap' ? <Treemap groups={groups} /> : <BubbleChart groups={groups} />}
+          </div>
+        )}
       </div>
     </>
   )

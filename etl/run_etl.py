@@ -24,5 +24,5 @@ async def hn_pipeline():
 if __name__ == "__main__":
     hn_pipeline.serve(
         name="hn-pipeline",
-        cron="0 0 * * *",
+        cron="0 * * * *",
     )

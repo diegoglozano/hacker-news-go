@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import * as Plot from '@observablehq/plot'
 import { hierarchy, treemap } from 'd3'
 import './App.css'
 
@@ -126,55 +125,64 @@ function Treemap({ groups }: { groups: Group[] }) {
 }
 
 function BubbleChart({ groups }: { groups: Group[] }) {
-  const ref = useRef<HTMLDivElement>(null)
+  const [selected, setSelected] = useState<Group | null>(null)
+  const W = 800, H = 480, PAD = 90
 
-  useEffect(() => {
-    if (!ref.current) return
-
-    const centroids = groups.map(g => ({
-      label: g.label,
-      x: g.stories.reduce((s, d) => s + d.x, 0) / g.stories.length,
-      y: g.stories.reduce((s, d) => s + d.y, 0) / g.stories.length,
-      count: g.stories.length,
+  const nodes = useMemo(() => {
+    const raw = groups.map(g => ({
+      group: g,
+      cx: g.stories.reduce((s, d) => s + d.x, 0) / g.stories.length,
+      cy: g.stories.reduce((s, d) => s + d.y, 0) / g.stories.length,
       r: Math.sqrt(g.stories.length) * 15,
-      color: g.color,
     }))
-
-    const plot = Plot.plot({
-      width: 800,
-      height: 480,
-      style: { background: 'transparent', color: '#e0e0e0' },
-      marks: [
-        Plot.dot(centroids, {
-          x: 'x',
-          y: 'y',
-          r: 'r',
-          fill: 'color',
-          fillOpacity: 0.6,
-          stroke: 'color',
-          tip: true,
-          title: (d: typeof centroids[0]) => `${d.label}\n${d.count} stories`,
-        }),
-        Plot.text(centroids, {
-          x: 'x',
-          y: 'y',
-          text: 'label',
-          fill: '#fff',
-          fontSize: 11,
-          fontWeight: 600,
-        }),
-      ],
-      r: { type: 'identity' },
-      color: { type: 'identity' },
-      x: { axis: null, inset: 80 },
-      y: { axis: null, inset: 80 },
-    })
-
-    ref.current.replaceChildren(plot)
-    return () => plot.remove()
+    const xs = raw.map(n => n.cx), ys = raw.map(n => n.cy)
+    const [minX, maxX] = [Math.min(...xs), Math.max(...xs)]
+    const [minY, maxY] = [Math.min(...ys), Math.max(...ys)]
+    const norm = (v: number, lo: number, hi: number, a: number, b: number) =>
+      lo === hi ? (a + b) / 2 : a + (v - lo) / (hi - lo) * (b - a)
+    return raw.map(n => ({
+      ...n,
+      cx: norm(n.cx, minX, maxX, PAD, W - PAD),
+      cy: norm(n.cy, minY, maxY, PAD, H - PAD),
+    }))
   }, [groups])
 
-  return <div ref={ref} />
+  if (selected) {
+    return (
+      <div className="treemap-expanded">
+        <div className="treemap-expanded-header" style={{ borderColor: selected.color }}>
+          <span style={{ color: selected.color, fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            {selected.label}
+          </span>
+          <button className="back-btn" onClick={() => setSelected(null)}>← Back</button>
+        </div>
+        <ul className="treemap-expanded-list">
+          {selected.stories.map(s => (
+            <li key={s.title}>
+              <a href={s.url ?? undefined} target="_blank" rel="noreferrer">{s.title}</a>
+              <span className="meta">{s.by && `${s.by} · `}{s.score ?? 0} pts</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+      {nodes.map(({ group, cx, cy, r }) => (
+        <g key={group.label} onClick={() => setSelected(group)} style={{ cursor: 'pointer' }}>
+          <circle cx={cx} cy={cy} r={r} fill={group.color} fillOpacity={0.6} stroke={group.color} strokeOpacity={0.9} />
+          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fill="#fff" fontSize={11} fontWeight={600} style={{ pointerEvents: 'none' }}>
+            {group.label}
+          </text>
+          <text x={cx} y={cy + 16} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.55)" fontSize={9} style={{ pointerEvents: 'none' }}>
+            {group.stories.length} stories
+          </text>
+        </g>
+      ))}
+    </svg>
+  )
 }
 
 function TopicBlock({ label, stories, color }: Group) {

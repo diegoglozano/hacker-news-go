@@ -33,7 +33,7 @@ function ClusterPlot({ data }: { data: Cluster[] }) {
           opacity: 0.8,
           tip: true,
           title: (d: Cluster) => d.by && d.score ? `${d.title}\n${d.by} · ${d.score} pts` : d.title,
-          href: 'url',
+          href: (d: Cluster) => d.url ?? undefined,
           target: '_blank',
         }),
       ],

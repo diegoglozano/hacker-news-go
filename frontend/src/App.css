@@ -69,3 +69,7 @@ h1 {
   color: #555;
   font-size: 0.9rem;
 }
+
+[aria-label="tip"] {
+  color: #111;
+}

@@ -225,8 +225,6 @@ function distributeColumns(groups: Group[], cols: number): Group[][] {
     heights[i] += g.stories.length
   }
 
-  if (other) columns[cols - 1].push(other)
-
   return columns
 }
 
@@ -235,6 +233,22 @@ function TopicBlock({ label, stories, color }: Group) {
     <div className="block" style={{ '--accent': color } as React.CSSProperties}>
       <h2>{label}</h2>
       <ul>
+        {stories.map(s => (
+          <li key={s.title}>
+            <a href={s.url ?? undefined} target="_blank" rel="noreferrer">{s.title}</a>
+            <span className="meta">{s.by && `${s.by} · `}{s.score ?? 0} pts</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function OtherBlock({ stories, color }: Group) {
+  return (
+    <div className="block other-block" style={{ '--accent': color } as React.CSSProperties}>
+      <h2>Other</h2>
+      <ul className="other-stories">
         {stories.map(s => (
           <li key={s.title}>
             <a href={s.url ?? undefined} target="_blank" rel="noreferrer">{s.title}</a>
@@ -264,7 +278,9 @@ export default function App() {
   if (loading) return <p className="loading">Loading…</p>
 
   const groups = getGroups(clusters)
-  const columns = distributeColumns(groups, colCount)
+  const mainGroups = groups.filter(g => g.label !== 'Other')
+  const otherGroup = groups.find(g => g.label === 'Other')
+  const columns = distributeColumns(mainGroups, colCount)
 
   return (
     <>
@@ -276,13 +292,16 @@ export default function App() {
           <button className={`tab${tab === 'bubble' ? ' active' : ''}`} onClick={() => setTab('bubble')}>Bubble</button>
         </div>
         {tab === 'feed' && (
-          <div className="grid">
-            {columns.map((col, i) => (
-              <div key={i} className="grid-column">
-                {col.map(g => <TopicBlock key={g.label} {...g} />)}
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="grid">
+              {columns.map((col, i) => (
+                <div key={i} className="grid-column">
+                  {col.map(g => <TopicBlock key={g.label} {...g} />)}
+                </div>
+              ))}
+            </div>
+            {otherGroup && <OtherBlock {...otherGroup} />}
+          </>
         )}
         {(tab === 'treemap' || tab === 'bubble') && (
           <div className="chart-container">

@@ -233,3 +233,20 @@ h1 {
   font-size: 0.72rem;
   color: #555;
 }
+
+.other-block {
+  margin-top: 1rem;
+}
+
+.other-stories {
+  columns: 3;
+  column-gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .other-stories { columns: 2; }
+}
+
+@media (max-width: 550px) {
+  .other-stories { columns: 1; }
+}

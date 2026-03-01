@@ -1,9 +1,12 @@
+import numpy as np
 import polars as pl
 import os
 from urllib.parse import urlparse
 
 from sklearn.cluster import HDBSCAN
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, TruncatedSVD
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import normalize
 
 from fastembed import TextEmbedding
 
@@ -16,9 +19,11 @@ POLARS_DB_URL = DATABASE_URL.replace("postgresql+psycopg://", "postgresql://")
 
 
 model = TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")
-hdbscan = HDBSCAN(min_cluster_size=3, min_samples=1)
-pca_cluster = PCA(n_components=10, random_state=SEED)
+tfidf = TfidfVectorizer()
+svd = TruncatedSVD(n_components=15, random_state=SEED)
+pca_cluster = PCA(n_components=15, random_state=SEED)
 pca_viz = PCA(n_components=2, random_state=SEED)
+hdbscan = HDBSCAN(min_cluster_size=3, min_samples=1)
 
 
 def extract_domain(url: str | None) -> str | None:
@@ -42,9 +47,12 @@ async def main():
         for row in df.iter_rows(named=True)
     ]
 
-    embeddings = list(model.embed(texts))
-    clusters = hdbscan.fit_predict(pca_cluster.fit_transform(embeddings))
-    coords = pca_viz.fit_transform(embeddings)
+    tfidf_features = normalize(svd.fit_transform(tfidf.fit_transform(texts)))
+    emb_features = normalize(pca_cluster.fit_transform(list(model.embed(texts))))
+    features = np.hstack([tfidf_features, emb_features])
+
+    clusters = hdbscan.fit_predict(features)
+    coords = pca_viz.fit_transform(features)
 
     (
         df

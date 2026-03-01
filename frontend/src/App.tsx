@@ -212,14 +212,21 @@ function useColumnCount() {
 }
 
 function distributeColumns(groups: Group[], cols: number): Group[][] {
-  const sorted = [...groups].sort((a, b) => b.stories.length - a.stories.length)
+  const other = groups.find(g => g.label === 'Other')
+  const rest = [...groups.filter(g => g.label !== 'Other')]
+    .sort((a, b) => b.stories.length - a.stories.length)
+
   const columns: Group[][] = Array.from({ length: cols }, () => [])
   const heights = new Array(cols).fill(0)
-  for (const g of sorted) {
+
+  for (const g of rest) {
     const i = heights.indexOf(Math.min(...heights))
     columns[i].push(g)
     heights[i] += g.stories.length
   }
+
+  if (other) columns[cols - 1].push(other)
+
   return columns
 }
 

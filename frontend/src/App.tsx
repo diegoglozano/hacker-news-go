@@ -212,7 +212,6 @@ function useColumnCount() {
 }
 
 function distributeColumns(groups: Group[], cols: number): Group[][] {
-  const other = groups.find(g => g.label === 'Other')
   const rest = [...groups.filter(g => g.label !== 'Other')]
     .sort((a, b) => b.stories.length - a.stories.length)
 

@@ -22,7 +22,7 @@ async def get_clusters(
 ):
     result = await session.execute(
         select(Cluster, Story.url, Story.score, Story.by)
-        .outerjoin(Story, Story.title == Cluster.title)
+        .outerjoin(Story, Story.id == Cluster.id)
     )
     return [
         {

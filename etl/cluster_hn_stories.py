@@ -23,7 +23,7 @@ async def main():
         pl
         .read_database_uri(
             query="""
-                SELECT title
+                SELECT id, title
                 FROM stories
             """,
             uri=POLARS_DB_URL,

@@ -21,7 +21,8 @@ class Story(Base):
 class Cluster(Base):
     __tablename__ = "clusters"
 
-    title: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
     cluster: Mapped[int]
     x: Mapped[float]
     y: Mapped[float]

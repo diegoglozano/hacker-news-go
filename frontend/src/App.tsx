@@ -166,8 +166,8 @@ function BubbleChart({ groups }: { groups: Group[] }) {
       ],
       r: { type: 'identity' },
       color: { type: 'identity' },
-      x: { axis: null },
-      y: { axis: null },
+      x: { axis: null, inset: 80 },
+      y: { axis: null, inset: 80 },
     })
 
     ref.current.replaceChildren(plot)

@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Query
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -6,6 +7,13 @@ from src.db.session import get_session
 from src.db.tables import Story, Cluster
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://hn.diegoglozano.com"],
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/stories")

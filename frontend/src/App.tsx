@@ -185,7 +185,7 @@ function BubbleChart({ groups }: { groups: Group[] }) {
       <svg viewBox={`0 0 ${S} ${S}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
         {nodes.map(({ group, cx, cy, r }) => (
           <g key={group.label} onClick={() => setSelected(group)} style={{ cursor: 'pointer' }}>
-            <circle cx={cx} cy={cy} r={r} fill={group.color} fillOpacity={0.6} stroke={group.color} strokeOpacity={0.9} />
+            <circle cx={cx} cy={cy} r={r} fill={group.color} stroke="#000" strokeWidth={2} />
             <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fill="#fff" fontSize={fontSize} fontWeight={600} style={{ pointerEvents: 'none' }}>
               {group.label}
             </text>
@@ -290,7 +290,7 @@ export default function App() {
 
   return (
     <>
-      <h1>Orbit <span style={{ color: '#888', fontWeight: 400 }}>· Hacker News</span></h1>
+      <h1>Orbit <span style={{ color: '#666', fontWeight: 400 }}>· Hacker News</span></h1>
       <div className="section">
         <div className="tabs">
           <button className={`tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>Feed</button>

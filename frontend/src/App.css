@@ -1,13 +1,15 @@
 h1 {
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-size: 1.6rem;
+  font-weight: 900;
   margin-bottom: 2rem;
-  color: #ff6600;
+  color: #0a0a0a;
+  letter-spacing: -0.02em;
 }
 
 .loading {
-  color: #555;
+  color: #444;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .section {
@@ -17,57 +19,62 @@ h1 {
 .tabs {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .tab {
-  background: none;
-  border: 1px solid #333;
-  color: #888;
-  padding: 0.35rem 0.9rem;
-  border-radius: 6px;
+  background: #fff;
+  border: 2px solid #000;
+  color: #000;
+  padding: 0.35rem 1rem;
+  border-radius: 4px;
   font-size: 0.8rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 3px 3px 0 #000;
 }
 
 .tab:hover {
-  border-color: #555;
-  color: #ccc;
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
 }
 
 .tab.active {
-  border-color: #ff6600;
-  color: #ff6600;
+  background: #000;
+  color: #fff;
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
 }
 
 .chart-container {
-  background: #0f0f0f;
-  border-radius: 8px;
-  padding: 1rem;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 1.25rem;
+  box-shadow: 4px 4px 0 #000;
   overflow-x: auto;
 }
 
 /* Treemap blocks */
 .treemap-block {
   position: absolute;
-  border-radius: 3px;
+  border-radius: 2px;
+  border: 1.5px solid rgba(0, 0, 0, 0.35);
   padding: 8px;
   box-sizing: border-box;
   cursor: pointer;
-  opacity: 0.85;
-  transition: opacity 0.15s, filter 0.15s;
+  transition: filter 0.1s;
   overflow: hidden;
 }
 
 .treemap-block:hover {
-  opacity: 1;
-  filter: brightness(1.15);
+  filter: brightness(1.12);
 }
 
 .treemap-label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -76,7 +83,7 @@ h1 {
 
 .treemap-count {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.75);
   margin-bottom: 4px;
 }
 
@@ -91,13 +98,13 @@ h1 {
 
 .treemap-stories li {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4;
   padding-top: 2px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-left: 8px;
   position: relative;
 }
@@ -106,10 +113,10 @@ h1 {
   content: '·';
   position: absolute;
   left: 0;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.55);
 }
 
-/* Treemap expanded view */
+/* Expanded view (treemap + bubble) */
 .treemap-expanded {
   display: flex;
   flex-direction: column;
@@ -122,23 +129,25 @@ h1 {
   justify-content: space-between;
   padding-bottom: 0.75rem;
   margin-bottom: 0.75rem;
-  border-bottom: 2px solid;
+  border-bottom: 3px solid #000;
 }
 
 .back-btn {
-  background: none;
-  border: 1px solid #333;
-  color: #888;
-  padding: 0.25rem 0.7rem;
-  border-radius: 5px;
+  background: #fff;
+  border: 2px solid #000;
+  color: #000;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
   font-size: 0.75rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 2px 2px 0 #000;
 }
 
 .back-btn:hover {
-  border-color: #555;
-  color: #ccc;
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000;
 }
 
 .treemap-expanded-list {
@@ -159,15 +168,16 @@ h1 {
 }
 
 .treemap-expanded-list a {
-  color: #e0e0e0;
+  color: #0a0a0a;
   text-decoration: none;
   font-size: 0.9rem;
+  font-weight: 500;
   line-height: 1.4;
 }
 
 .treemap-expanded-list a:hover {
-  color: #fff;
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .grid {
@@ -184,20 +194,28 @@ h1 {
 }
 
 .block {
-  background: #1a1a1a;
-  border-radius: 8px;
-  border-top: 3px solid var(--accent);
+  background: #fff;
+  border-radius: 4px;
+  border: 2px solid #000;
+  border-top: 4px solid var(--accent);
   padding: 1rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  box-shadow: 4px 4px 0 #000;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.block:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000;
 }
 
 .block h2 {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--accent);
   margin: 0;
 }
@@ -218,20 +236,22 @@ h1 {
 }
 
 .block a {
-  color: #e0e0e0;
+  color: #0a0a0a;
   text-decoration: none;
   font-size: 0.9rem;
   line-height: 1.4;
+  font-weight: 500;
 }
 
 .block a:hover {
-  color: #fff;
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .meta {
   font-size: 0.72rem;
-  color: #555;
+  color: #666;
+  font-weight: 500;
 }
 
 .other-block {

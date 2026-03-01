@@ -94,18 +94,18 @@ async def main():
         .group_by("cluster")
         .agg(pl.col("title"))
     )
-    labels: dict[int, str] = {-1: "Other"}
+    labels: dict[str, str] = {"-1": "Other"}
     results = await asyncio.gather(*[
         label_cluster(row["cluster"], row["title"])
         for row in cluster_titles.iter_rows(named=True)
     ])
-    labels.update(results)
+    labels.update({str(k): v for k, v in results})
 
     (
         df
         .drop("url")
         .with_columns(
-            pl.col("cluster").replace(labels).alias("label"),
+            pl.col("cluster").cast(pl.String).replace(labels).alias("label"),
         )
         .write_database(
             table_name="clusters",

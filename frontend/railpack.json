@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.railpack.com",
   "deploy": {
-    "startCommand": "npx serve dist -l 3000"
+    "startCommand": "bunx serve dist -l 3000"
   }
 }

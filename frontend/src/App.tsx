@@ -213,7 +213,7 @@ export default function App() {
 
   return (
     <>
-      <h1>Hacker News</h1>
+      <h1>Orbit <span style={{ color: '#888', fontWeight: 400 }}>· Hacker News</span></h1>
       <div className="section">
         <div className="tabs">
           <button className={`tab${tab === 'treemap' ? ' active' : ''}`} onClick={() => setTab('treemap')}>Treemap</button>

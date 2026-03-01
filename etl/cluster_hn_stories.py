@@ -1,7 +1,7 @@
 import polars as pl
 import os
 
-from sklearn.cluster import KMeans
+from sklearn.cluster import HDBSCAN
 from sklearn.decomposition import PCA
 
 from fastembed import TextEmbedding
@@ -15,7 +15,7 @@ POLARS_DB_URL = DATABASE_URL.replace("postgresql+psycopg://", "postgresql://")
 
 
 model = TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")
-kmeans = KMeans(n_clusters=5, random_state=SEED)
+hdbscan = HDBSCAN(min_cluster_size=5)
 pca = PCA(n_components=2, random_state=SEED)
 
 async def main():
@@ -42,7 +42,7 @@ async def main():
             pl
             .col("embedding")
             .map_batches(
-                lambda x: kmeans.fit_predict(x),
+                lambda x: hdbscan.fit_predict(x),
                 return_dtype=pl.Int8,
             )
             .alias("cluster"),

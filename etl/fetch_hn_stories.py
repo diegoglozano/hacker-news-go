@@ -41,7 +41,7 @@ async def main():
             top_stories = await resp.json()
 
     all_items = await get_all_items(
-        items=top_stories[:60],
+        items=top_stories[:90],
     )
     async with AsyncSessionLocal() as session:
         story_fields = {c.name for c in Story.__table__.columns}

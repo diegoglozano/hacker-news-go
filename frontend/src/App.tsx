@@ -126,14 +126,24 @@ function Treemap({ groups }: { groups: Group[] }) {
 
 function BubbleChart({ groups }: { groups: Group[] }) {
   const [selected, setSelected] = useState<Group | null>(null)
-  const W = 800, H = 480, PAD = 90
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerW, setContainerW] = useState(600)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const ro = new ResizeObserver(([e]) => setContainerW(e.contentRect.width))
+    ro.observe(containerRef.current)
+    return () => ro.disconnect()
+  }, [])
+
+  const S = containerW, PAD = S * 0.12
 
   const nodes = useMemo(() => {
     const raw = groups.map(g => ({
       group: g,
       cx: g.stories.reduce((s, d) => s + d.x, 0) / g.stories.length,
       cy: g.stories.reduce((s, d) => s + d.y, 0) / g.stories.length,
-      r: Math.sqrt(g.stories.length) * 15,
+      r: Math.sqrt(g.stories.length) * (S / 40),
     }))
     const xs = raw.map(n => n.cx), ys = raw.map(n => n.cy)
     const [minX, maxX] = [Math.min(...xs), Math.max(...xs)]
@@ -142,10 +152,10 @@ function BubbleChart({ groups }: { groups: Group[] }) {
       lo === hi ? (a + b) / 2 : a + (v - lo) / (hi - lo) * (b - a)
     return raw.map(n => ({
       ...n,
-      cx: norm(n.cx, minX, maxX, PAD, W - PAD),
-      cy: norm(n.cy, minY, maxY, PAD, H - PAD),
+      cx: norm(n.cx, minX, maxX, PAD, S - PAD),
+      cy: norm(n.cy, minY, maxY, PAD, S - PAD),
     }))
-  }, [groups])
+  }, [groups, S, PAD])
 
   if (selected) {
     return (
@@ -168,20 +178,24 @@ function BubbleChart({ groups }: { groups: Group[] }) {
     )
   }
 
+  const fontSize = Math.max(10, S / 60)
+
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
-      {nodes.map(({ group, cx, cy, r }) => (
-        <g key={group.label} onClick={() => setSelected(group)} style={{ cursor: 'pointer' }}>
-          <circle cx={cx} cy={cy} r={r} fill={group.color} fillOpacity={0.6} stroke={group.color} strokeOpacity={0.9} />
-          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fill="#fff" fontSize={11} fontWeight={600} style={{ pointerEvents: 'none' }}>
-            {group.label}
-          </text>
-          <text x={cx} y={cy + 16} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.55)" fontSize={9} style={{ pointerEvents: 'none' }}>
-            {group.stories.length} stories
-          </text>
-        </g>
-      ))}
-    </svg>
+    <div ref={containerRef} style={{ width: '100%' }}>
+      <svg viewBox={`0 0 ${S} ${S}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+        {nodes.map(({ group, cx, cy, r }) => (
+          <g key={group.label} onClick={() => setSelected(group)} style={{ cursor: 'pointer' }}>
+            <circle cx={cx} cy={cy} r={r} fill={group.color} fillOpacity={0.6} stroke={group.color} strokeOpacity={0.9} />
+            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fill="#fff" fontSize={fontSize} fontWeight={600} style={{ pointerEvents: 'none' }}>
+              {group.label}
+            </text>
+            <text x={cx} y={cy + fontSize * 1.4} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.55)" fontSize={fontSize * 0.8} style={{ pointerEvents: 'none' }}>
+              {group.stories.length} stories
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
   )
 }
 

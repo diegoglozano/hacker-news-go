@@ -28,6 +28,7 @@ async def get_clusters(
         {
             "title": c.title,
             "cluster": c.cluster,
+            "label": c.label,
             "x": c.x,
             "y": c.y,
             "url": url,

@@ -24,5 +24,6 @@ class Cluster(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str]
     cluster: Mapped[int]
+    label: Mapped[str]
     x: Mapped[float]
     y: Mapped[float]

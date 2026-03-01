@@ -7,6 +7,7 @@ const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 interface Cluster {
   title: string
   cluster: number
+  label: string
   x: number
   y: number
   url: string | null
@@ -21,10 +22,10 @@ function ClusterPlot({ data }: { data: Cluster[] }) {
     if (!ref.current) return
 
     const palette = ['#4269d0', '#efb118', '#ff725c', '#6cc5b0', '#3ca951', '#ff8ab7', '#a463f2', '#97bbf5', '#9c6b4e']
-    const clusterIds = [...new Set(data.map(d => String(d.cluster)))].sort((a, b) => Number(a) - Number(b))
-    const nonNoiseIds = clusterIds.filter(id => id !== '-1')
-    const colorRange = clusterIds.map(id =>
-      id === '-1' ? '#888888' : palette[nonNoiseIds.indexOf(id) % palette.length]
+    const labels = [...new Set(data.map(d => d.label))]
+    const nonNoiseLabels = labels.filter(l => l !== 'Other')
+    const colorRange = labels.map(l =>
+      l === 'Other' ? '#888888' : palette[nonNoiseLabels.indexOf(l) % palette.length]
     )
 
     const plot = Plot.plot({
@@ -35,7 +36,7 @@ function ClusterPlot({ data }: { data: Cluster[] }) {
         Plot.dot(data, {
           x: 'x',
           y: 'y',
-          fill: (d: Cluster) => String(d.cluster),
+          fill: (d: Cluster) => d.label,
           r: 5,
           opacity: 0.8,
           tip: true,
@@ -44,7 +45,7 @@ function ClusterPlot({ data }: { data: Cluster[] }) {
           target: '_blank',
         }),
       ],
-      color: { domain: clusterIds, range: colorRange, legend: true, label: 'Cluster' },
+      color: { domain: labels, range: colorRange, legend: true, label: 'Cluster' },
       x: { axis: null },
       y: { axis: null },
     })

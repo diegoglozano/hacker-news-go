@@ -96,6 +96,17 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4;
+  padding-top: 2px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-left: 8px;
+  position: relative;
+}
+
+.treemap-stories li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 /* Treemap expanded view */

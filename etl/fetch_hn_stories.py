@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
     async_sessionmaker,
 )
+from sqlalchemy import delete
 from sqlalchemy.dialects.postgresql import insert
 from aiohttp import ClientSession
 
@@ -40,7 +41,7 @@ async def main():
             top_stories = await resp.json()
 
     all_items = await get_all_items(
-        items=top_stories,
+        items=top_stories[:60],
     )
     async with AsyncSessionLocal() as session:
         story_fields = {c.name for c in Story.__table__.columns}
@@ -50,14 +51,7 @@ async def main():
             if item and item.get("type") == "story"
         ]
 
-        stmt = (
-            insert(Story)
-            .values(data)
-            .on_conflict_do_nothing(
-                index_elements=["id"]
-            )
-        )
-
-        await session.execute(stmt)
+        await session.execute(delete(Story))
+        await session.execute(insert(Story).values(data))
         await session.commit()
     logger.info("End fetching HN stories")

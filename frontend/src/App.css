@@ -10,6 +10,44 @@ h1 {
   font-size: 0.9rem;
 }
 
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  background: none;
+  border: 1px solid #333;
+  color: #888;
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tab:hover {
+  border-color: #555;
+  color: #ccc;
+}
+
+.tab.active {
+  border-color: #ff6600;
+  color: #ff6600;
+}
+
+.chart-container {
+  background: #0f0f0f;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

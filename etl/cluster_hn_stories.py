@@ -16,8 +16,8 @@ POLARS_DB_URL = DATABASE_URL.replace("postgresql+psycopg://", "postgresql://")
 
 
 model = TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")
-hdbscan = HDBSCAN(min_cluster_size=5)
-pca_cluster = PCA(n_components=20, random_state=SEED)
+hdbscan = HDBSCAN(min_cluster_size=3, min_samples=1)
+pca_cluster = PCA(n_components=10, random_state=SEED)
 pca_viz = PCA(n_components=2, random_state=SEED)
 
 

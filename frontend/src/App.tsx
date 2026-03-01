@@ -56,7 +56,7 @@ function Treemap({ groups }: { groups: Group[] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerW, setContainerW] = useState(800)
   const [selected, setSelected] = useState<Group | null>(null)
-  const H = 480
+  const H = Math.min(600, Math.max(300, Math.round(containerW * 0.55)))
 
   useEffect(() => {
     if (!containerRef.current) return

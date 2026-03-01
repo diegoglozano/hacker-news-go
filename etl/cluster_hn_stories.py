@@ -1,5 +1,6 @@
 import polars as pl
 import os
+from urllib.parse import urlparse
 
 from sklearn.cluster import HDBSCAN
 from sklearn.decomposition import PCA
@@ -16,50 +17,43 @@ POLARS_DB_URL = DATABASE_URL.replace("postgresql+psycopg://", "postgresql://")
 
 model = TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")
 hdbscan = HDBSCAN(min_cluster_size=5)
-pca = PCA(n_components=2, random_state=SEED)
+pca_cluster = PCA(n_components=20, random_state=SEED)
+pca_viz = PCA(n_components=2, random_state=SEED)
+
+
+def extract_domain(url: str | None) -> str | None:
+    if not url:
+        return None
+    return urlparse(url).netloc.removeprefix("www.")
+
 
 async def main():
+    df = pl.read_database_uri(
+        query="""
+            SELECT id, title, url
+            FROM stories
+        """,
+        uri=POLARS_DB_URL,
+        engine="connectorx",
+    )
+
+    texts = [
+        f"{extract_domain(row['url'])}: {row['title']}" if row['url'] else row['title']
+        for row in df.iter_rows(named=True)
+    ]
+
+    embeddings = list(model.embed(texts))
+    clusters = hdbscan.fit_predict(pca_cluster.fit_transform(embeddings))
+    coords = pca_viz.fit_transform(embeddings)
+
     (
-        pl
-        .read_database_uri(
-            query="""
-                SELECT id, title
-                FROM stories
-            """,
-            uri=POLARS_DB_URL,
-            engine="connectorx",
-        )
+        df
+        .drop("url")
         .with_columns(
-            pl
-            .col("title")
-            .map_batches(
-                lambda x: pl.Series(model.embed(x)),
-                return_dtype=pl.Array(pl.Float64, model.embedding_size),
-            )
-            .alias("embedding")
+            pl.Series("cluster", clusters).cast(pl.Int8),
+            pl.Series("x", coords[:, 0]),
+            pl.Series("y", coords[:, 1]),
         )
-        .with_columns(
-            pl
-            .col("embedding")
-            .map_batches(
-                lambda x: hdbscan.fit_predict(x),
-                return_dtype=pl.Int8,
-            )
-            .alias("cluster"),
-            pl
-            .col("embedding")
-            .map_batches(
-                lambda x: pca.fit_transform(x),
-                return_dtype=pl.Array(pl.Float64, pca.n_components)
-            )
-            .alias("embedding_2"),
-        )
-        .drop("embedding")
-        .with_columns(
-            pl.col("embedding_2").arr.get(0).alias("x"),
-            pl.col("embedding_2").arr.get(1).alias("y"),
-        )
-        .drop("embedding_2")
         .write_database(
             table_name="clusters",
             connection=POLARS_DB_URL,

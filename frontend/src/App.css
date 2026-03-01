@@ -49,24 +49,15 @@ h1 {
 }
 
 /* Treemap blocks */
-.css-treemap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: flex-start;
-}
-
 .treemap-block {
-  min-width: 180px;
-  max-height: 260px;
-  border-radius: 6px;
-  padding: 10px;
+  position: absolute;
+  border-radius: 3px;
+  padding: 8px;
   box-sizing: border-box;
   cursor: pointer;
-  background: var(--accent);
   opacity: 0.85;
   transition: opacity 0.15s, filter 0.15s;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .treemap-block:hover {

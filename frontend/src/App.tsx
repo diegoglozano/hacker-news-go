@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { hierarchy, treemap } from 'd3'
 import './App.css'
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
@@ -39,8 +40,38 @@ function getGroups(clusters: Cluster[]): Group[] {
   }))
 }
 
+interface TreeNode {
+  label?: string
+  value?: number
+  color?: string
+  children?: TreeNode[]
+}
+
+type LayoutNode = {
+  data: TreeNode
+  x0: number; x1: number; y0: number; y1: number
+}
+
 function Treemap({ groups }: { groups: Group[] }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerW, setContainerW] = useState(800)
   const [selected, setSelected] = useState<Group | null>(null)
+  const H = Math.min(600, Math.max(300, Math.round(containerW * 0.55)))
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const ro = new ResizeObserver(([e]) => setContainerW(e.contentRect.width))
+    ro.observe(containerRef.current)
+    return () => ro.disconnect()
+  }, [])
+
+  const nodes = useMemo<LayoutNode[]>(() => {
+    const root = hierarchy<TreeNode>({
+      children: groups.map(g => ({ label: g.label, value: g.stories.length, color: g.color })),
+    }).sum(d => d.value ?? 0)
+    treemap<TreeNode>().size([containerW, H]).padding(3)(root)
+    return root.leaves() as unknown as LayoutNode[]
+  }, [groups, containerW])
 
   if (selected) {
     return (
@@ -64,21 +95,31 @@ function Treemap({ groups }: { groups: Group[] }) {
   }
 
   return (
-    <div className="css-treemap">
-      {groups.map(g => (
-        <div
-          key={g.label}
-          className="treemap-block"
-          style={{ '--accent': g.color, flex: g.stories.length } as React.CSSProperties}
-          onClick={() => setSelected(g)}
-        >
-          <div className="treemap-label">{g.label}</div>
-          <div className="treemap-count">{g.stories.length} stories</div>
-          <ul className="treemap-stories">
-            {g.stories.map(s => <li key={s.title}>{s.title}</li>)}
-          </ul>
-        </div>
-      ))}
+    <div ref={containerRef} style={{ position: 'relative', height: H }}>
+      {nodes.map(n => {
+        const w = n.x1 - n.x0
+        const h = n.y1 - n.y0
+        const group = groups.find(g => g.label === n.data.label)!
+        const storiesToShow = Math.max(0, Math.floor((h - 44) / 18))
+        return (
+          <div
+            key={n.data.label}
+            className="treemap-block"
+            style={{ left: n.x0, top: n.y0, width: w, height: h, background: n.data.color } as React.CSSProperties}
+            onClick={() => setSelected(group)}
+          >
+            {w > 50 && h > 24 && <div className="treemap-label">{n.data.label}</div>}
+            {w > 50 && h > 40 && <div className="treemap-count">{n.data.value} stories</div>}
+            {w > 80 && storiesToShow > 0 && (
+              <ul className="treemap-stories">
+                {group.stories.slice(0, storiesToShow).map(s => (
+                  <li key={s.title}>{s.title}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

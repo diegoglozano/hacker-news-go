@@ -54,7 +54,7 @@ async def label_cluster(cluster_id: int, titles: list[str]) -> tuple[int, str]:
                 ),
             }
         ],
-        max_tokens=16,
+        max_completion_tokens=16,
         temperature=0,
     )
     label = response.choices[0].message.content.strip()

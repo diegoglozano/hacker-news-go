@@ -42,23 +42,15 @@ def extract_domain(url: str | None) -> str | None:
 
 async def label_cluster(cluster_id: int, titles: list[str]) -> tuple[int, str]:
     titles_str = "\n".join(f"- {t}" for t in titles)
-    response = await openai_client.chat.completions.create(
+    response = await openai_client.responses.create(
         model="gpt-5-mini",
-        messages=[
-            {
-                "role": "user",
-                "content": (
-                    "Here are some Hacker News story titles from the same topic cluster:\n"
-                    f"{titles_str}\n\n"
-                    "Give a short 2-4 word label that describes the common topic. "
-                    "Reply with only the label, nothing else."
-                ),
-            }
-        ],
-        max_completion_tokens=16,
+        instructions="You will receive Hacker News story titles from the same topic cluster. Your task is to give a short 2-4 word label that describes the common topic.",
+        input=titles_str,
     )
-    logger.info(f"cluster {cluster_id} response: {response.choices[0].message}")
-    label = response.choices[0].message.content.strip()
+    logger.info("titles_str")
+    logger.info(titles_str)
+    logger.info(f"cluster {cluster_id} response: {response.output_text}")
+    label = response.output_text
     return cluster_id, label
 
 

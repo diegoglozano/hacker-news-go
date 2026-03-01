@@ -11,6 +11,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import normalize
 
 from fastembed import TextEmbedding
+from loguru import logger
 
 
 SEED = 42
@@ -56,6 +57,7 @@ async def label_cluster(cluster_id: int, titles: list[str]) -> tuple[int, str]:
         ],
         max_completion_tokens=16,
     )
+    logger.info(f"cluster {cluster_id} response: {response.choices[0].message}")
     label = response.choices[0].message.content.strip()
     return cluster_id, label
 

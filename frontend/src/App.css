@@ -171,16 +171,16 @@ h1 {
 }
 
 .grid {
-  columns: 3;
-  column-gap: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
-@media (max-width: 900px) {
-  .grid { columns: 2; }
-}
-
-@media (max-width: 550px) {
-  .grid { columns: 1; }
+.grid-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .block {
@@ -191,8 +191,6 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  break-inside: avoid;
-  margin-bottom: 1rem;
 }
 
 .block h2 {

@@ -199,6 +199,30 @@ function BubbleChart({ groups }: { groups: Group[] }) {
   )
 }
 
+function useColumnCount() {
+  const [cols, setCols] = useState(() =>
+    window.innerWidth <= 550 ? 1 : window.innerWidth <= 900 ? 2 : 3
+  )
+  useEffect(() => {
+    const update = () => setCols(window.innerWidth <= 550 ? 1 : window.innerWidth <= 900 ? 2 : 3)
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  return cols
+}
+
+function distributeColumns(groups: Group[], cols: number): Group[][] {
+  const sorted = [...groups].sort((a, b) => b.stories.length - a.stories.length)
+  const columns: Group[][] = Array.from({ length: cols }, () => [])
+  const heights = new Array(cols).fill(0)
+  for (const g of sorted) {
+    const i = heights.indexOf(Math.min(...heights))
+    columns[i].push(g)
+    heights[i] += g.stories.length
+  }
+  return columns
+}
+
 function TopicBlock({ label, stories, color }: Group) {
   return (
     <div className="block" style={{ '--accent': color } as React.CSSProperties}>
@@ -219,6 +243,7 @@ export default function App() {
   const [clusters, setClusters] = useState<Cluster[]>([])
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<'feed' | 'treemap' | 'bubble'>('feed')
+  const colCount = useColumnCount()
 
   useEffect(() => {
     fetch(`${API}/clusters`)
@@ -232,6 +257,7 @@ export default function App() {
   if (loading) return <p className="loading">Loading…</p>
 
   const groups = getGroups(clusters)
+  const columns = distributeColumns(groups, colCount)
 
   return (
     <>
@@ -244,7 +270,11 @@ export default function App() {
         </div>
         {tab === 'feed' && (
           <div className="grid">
-            {groups.map(g => <TopicBlock key={g.label} {...g} />)}
+            {columns.map((col, i) => (
+              <div key={i} className="grid-column">
+                {col.map(g => <TopicBlock key={g.label} {...g} />)}
+              </div>
+            ))}
           </div>
         )}
         {(tab === 'treemap' || tab === 'bubble') && (

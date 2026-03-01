@@ -57,6 +57,37 @@ function ClusterPlot({ data }: { data: Cluster[] }) {
   return <div ref={ref} />
 }
 
+function Feed({ data }: { data: Cluster[] }) {
+  const groups = data.reduce((acc, d) => {
+    (acc[d.label] ??= []).push(d)
+    return acc
+  }, {} as Record<string, Cluster[]>)
+
+  const sorted = Object.entries(groups).sort(([a], [b]) =>
+    a === 'Other' ? 1 : b === 'Other' ? -1 : a.localeCompare(b)
+  )
+
+  return (
+    <div className="feed">
+      {sorted.map(([label, stories]) => (
+        <div key={label} className="feed-group">
+          <h3>{label}</h3>
+          <ul>
+            {stories
+              .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+              .map(s => (
+                <li key={s.title}>
+                  <a href={s.url ?? undefined} target="_blank" rel="noreferrer">{s.title}</a>
+                  <span className="meta">{s.by && `${s.by} · `}{s.score ?? 0} pts</span>
+                </li>
+              ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function App() {
   const [clusters, setClusters] = useState<Cluster[]>([])
   const [loading, setLoading] = useState(true)
@@ -73,16 +104,22 @@ export default function App() {
   return (
     <>
       <h1>Hacker News</h1>
-      <div className="section">
-        <h2>Story clusters</h2>
-        <div className="plot-container">
-          {loading ? (
-            <p className="loading">Loading…</p>
-          ) : (
-            <ClusterPlot data={clusters} />
-          )}
-        </div>
-      </div>
+      {loading ? (
+        <p className="loading">Loading…</p>
+      ) : (
+        <>
+          <div className="section">
+            <h2>Story clusters</h2>
+            <div className="plot-container">
+              <ClusterPlot data={clusters} />
+            </div>
+          </div>
+          <div className="section">
+            <h2>Stories</h2>
+            <Feed data={clusters} />
+          </div>
+        </>
+      )}
     </>
   )
 }

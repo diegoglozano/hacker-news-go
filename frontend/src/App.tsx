@@ -243,18 +243,25 @@ function TopicBlock({ label, stories, color }: Group) {
   )
 }
 
-function OtherBlock({ stories, color }: Group) {
+function OtherBlock({ stories, color, colCount }: Group & { colCount: number }) {
+  const cols: Cluster[][] = Array.from({ length: colCount }, () => [])
+  stories.forEach((s, i) => cols[i % colCount].push(s))
+
   return (
     <div className="block other-block" style={{ '--accent': color } as React.CSSProperties}>
       <h2>Other</h2>
-      <ul className="other-stories">
-        {stories.map(s => (
-          <li key={s.title}>
-            <a href={s.url ?? undefined} target="_blank" rel="noreferrer">{s.title}</a>
-            <span className="meta">{s.by && `${s.by} · `}{s.score ?? 0} pts</span>
-          </li>
+      <div className="other-columns">
+        {cols.map((col, i) => (
+          <ul key={i}>
+            {col.map(s => (
+              <li key={s.title}>
+                <a href={s.url ?? undefined} target="_blank" rel="noreferrer">{s.title}</a>
+                <span className="meta">{s.by && `${s.by} · `}{s.score ?? 0} pts</span>
+              </li>
+            ))}
+          </ul>
         ))}
-      </ul>
+      </div>
     </div>
   )
 }
@@ -299,7 +306,7 @@ export default function App() {
                 </div>
               ))}
             </div>
-            {otherGroup && <OtherBlock {...otherGroup} />}
+            {otherGroup && <OtherBlock {...otherGroup} colCount={colCount} />}
           </>
         )}
         {(tab === 'treemap' || tab === 'bubble') && (
